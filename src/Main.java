@@ -19,48 +19,31 @@ public class Main {
             myReader.close();
 
             int n = Integer.parseInt(inputLines.get(0));
-            ArrayList<TaxPayer> taxPayers = new ArrayList<>();
-
-            String taxPayerType;
             int nextLine = 1;
             for (int i = 0; i < n; i++) {
-                taxPayerType = inputLines.get(nextLine);
-                String name = inputLines.get(nextLine + 1);
-                double annualIncome = Double.parseDouble(inputLines.get(nextLine + 2));
-                nextLine += 3;
-
-                switch (taxPayerType) {
-                    case "i": {
-                        double healthExpenditure = Double.parseDouble(inputLines.get(nextLine));
-                        nextLine++;
-
-                        taxPayers.add(new Person(name, annualIncome, healthExpenditure));
-
-                        break;
-                    }
-                    case "c": {
-                        int numberOfEmployees = Integer.parseInt(inputLines.get(nextLine));
-                        nextLine++;
-
-                        taxPayers.add(new Company(name, annualIncome, numberOfEmployees));
-
-                        break;
-                    }
-                }
+                nextLine += handleAccount(inputLines, nextLine);
             }
-
-            double totalTaxes = 0;
-            System.out.println("TAXES PAID:");
-            for (TaxPayer taxPayer : taxPayers) {
-                double tax = taxPayer.calculateTax();
-                totalTaxes += tax;
-                System.out.printf("%s: $ %.2f\n", taxPayer.getName(), tax);
-            }
-
-            System.out.printf("\nTOTAL TAXES: $ %.2f\n", totalTaxes);
 
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
         }
+    }
+
+    public static int handleAccount(ArrayList<String> inputLines, int firstLine) {
+        int number = Integer.parseInt(inputLines.get(firstLine));
+        String holder = inputLines.get(firstLine + 1);
+        double initialBalance = Double.parseDouble(inputLines.get(firstLine + 2));
+        double limit = Double.parseDouble(inputLines.get(firstLine + 3));
+        double withdrawAmount = Double.parseDouble(inputLines.get(firstLine + 4));
+
+        try {
+            Account account = new Account(number, holder, initialBalance, limit);
+            account.withdraw(withdrawAmount);
+            System.out.println(account);
+        } catch (WithdrawError e) {
+            System.out.println("Withdraw error: " + e.getMessage());
+        }
+
+        return 5;
     }
 }
