@@ -1,11 +1,12 @@
-Alex Green
-alex@gmail.com
-15/03/1985
-PROCESSING
-2
-TV
-1000.00
-1
-Mouse
-40.00
-2
+3
+i
+Tablet
+260.00
+20.00
+c
+Notebook
+1100.00
+u
+Iphone
+400.00
+15/03/2017

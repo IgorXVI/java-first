@@ -21,33 +21,50 @@ public class Main {
             }
             myReader.close();
 
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            Date clientBirth = sdf.parse(inputLines.get(2));
-            Client user = new Client(inputLines.get(0), inputLines.get(1), clientBirth);
+            int n = Integer.parseInt(inputLines.get(0));
+            ArrayList<Product> products = new ArrayList<>();
 
-            OrderStatus orderStatus = OrderStatus.valueOf(inputLines.get(3));
-            Order order = new Order(new Date(), orderStatus, user);
-
-            int itemCount = Integer.parseInt(inputLines.get(4));
-
-            for (int i = 0; i < itemCount; i++) {
-                String itemName = inputLines.get(5 + i * 3);
-                double itemPrice = Double.parseDouble(inputLines.get(6 + i * 3));
-
-                Product product = new Product(itemName, itemPrice);
-
-                int quantity = Integer.parseInt(inputLines.get(7 + i * 3));
-
-                OrderItem item = new OrderItem(quantity, product);
-                order.addItem(item);
+            String productType;
+            int nextLine = 1;
+            for (int i = 0; i < n; i++) {
+                productType = inputLines.get(nextLine);
+                nextLine++;
+                switch (productType) {
+                    case "c": {
+                        String name = inputLines.get(nextLine);
+                        double price = Double.parseDouble(inputLines.get(nextLine + 1));
+                        nextLine += 2;
+                        products.add(new Product(name, price));
+                        break;
+                    }
+                    case "i": {
+                        String name = inputLines.get(nextLine);
+                        double price = Double.parseDouble(inputLines.get(nextLine + 1));
+                        double customsFee = Double.parseDouble(inputLines.get(nextLine + 2));
+                        nextLine += 3;
+                        products.add(new ImportedProduct(name, price, customsFee));
+                        break;
+                    }
+                    case "u": {
+                        String name = inputLines.get(nextLine);
+                        double price = Double.parseDouble(inputLines.get(nextLine + 1));
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        Date date = sdf.parse(inputLines.get(nextLine + 2));
+                        nextLine += 3;
+                        products.add(new UsedProduct(name, price, date));
+                        break;
+                    }
+                }
             }
 
-            System.out.print(order);
+            for (Product product : products) {
+                System.out.println(product.priceTag());
+            }
 
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
         } catch (ParseException e) {
-            System.out.println("Cannot parse date");
+            System.out.println("Date format exception");
         }
     }
 }
