@@ -1,9 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -22,49 +19,48 @@ public class Main {
             myReader.close();
 
             int n = Integer.parseInt(inputLines.get(0));
-            ArrayList<Product> products = new ArrayList<>();
+            ArrayList<TaxPayer> taxPayers = new ArrayList<>();
 
-            String productType;
+            String taxPayerType;
             int nextLine = 1;
             for (int i = 0; i < n; i++) {
-                productType = inputLines.get(nextLine);
-                nextLine++;
-                switch (productType) {
-                    case "c": {
-                        String name = inputLines.get(nextLine);
-                        double price = Double.parseDouble(inputLines.get(nextLine + 1));
-                        nextLine += 2;
-                        products.add(new Product(name, price));
-                        break;
-                    }
+                taxPayerType = inputLines.get(nextLine);
+                String name = inputLines.get(nextLine + 1);
+                double annualIncome = Double.parseDouble(inputLines.get(nextLine + 2));
+                nextLine += 3;
+
+                switch (taxPayerType) {
                     case "i": {
-                        String name = inputLines.get(nextLine);
-                        double price = Double.parseDouble(inputLines.get(nextLine + 1));
-                        double customsFee = Double.parseDouble(inputLines.get(nextLine + 2));
-                        nextLine += 3;
-                        products.add(new ImportedProduct(name, price, customsFee));
+                        double healthExpenditure = Double.parseDouble(inputLines.get(nextLine));
+                        nextLine++;
+
+                        taxPayers.add(new Person(name, annualIncome, healthExpenditure));
+
                         break;
                     }
-                    case "u": {
-                        String name = inputLines.get(nextLine);
-                        double price = Double.parseDouble(inputLines.get(nextLine + 1));
-                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                        Date date = sdf.parse(inputLines.get(nextLine + 2));
-                        nextLine += 3;
-                        products.add(new UsedProduct(name, price, date));
+                    case "c": {
+                        int numberOfEmployees = Integer.parseInt(inputLines.get(nextLine));
+                        nextLine++;
+
+                        taxPayers.add(new Company(name, annualIncome, numberOfEmployees));
+
                         break;
                     }
                 }
             }
 
-            for (Product product : products) {
-                System.out.println(product.priceTag());
+            double totalTaxes = 0;
+            System.out.println("TAXES PAID:");
+            for (TaxPayer taxPayer : taxPayers) {
+                double tax = taxPayer.calculateTax();
+                totalTaxes += tax;
+                System.out.printf("%s: $ %.2f\n", taxPayer.getName(), tax);
             }
+
+            System.out.printf("\nTOTAL TAXES: $ %.2f\n", totalTaxes);
 
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
-        } catch (ParseException e) {
-            System.out.println("Date format exception");
         }
     }
 }
