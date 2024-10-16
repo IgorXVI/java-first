@@ -1,49 +1,55 @@
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Locale.setDefault(Locale.US);
 
-        try {
-            File myObj = new File("src/input.txt");
-            Scanner myReader = new Scanner(myObj);
-            ArrayList<String> inputLines = new ArrayList<>();
-            while (myReader.hasNextLine()) {
-                String data = myReader.nextLine();
-                inputLines.add(data);
+        String inputPath = "C:\\Users\\inazu\\Projects\\ws-intellij\\java-first\\src\\input.csv";
+
+        ArrayList<String> inputLines = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(inputPath))) {
+            String line = br.readLine();
+            while (line != null) {
+                inputLines.add(line);
+                line = br.readLine();
             }
-            myReader.close();
-
-            int n = Integer.parseInt(inputLines.get(0));
-            int nextLine = 1;
-            for (int i = 0; i < n; i++) {
-                nextLine += handleAccount(inputLines, nextLine);
-            }
-
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found");
-        }
-    }
-
-    public static int handleAccount(ArrayList<String> inputLines, int firstLine) {
-        int number = Integer.parseInt(inputLines.get(firstLine));
-        String holder = inputLines.get(firstLine + 1);
-        double initialBalance = Double.parseDouble(inputLines.get(firstLine + 2));
-        double limit = Double.parseDouble(inputLines.get(firstLine + 3));
-        double withdrawAmount = Double.parseDouble(inputLines.get(firstLine + 4));
-
-        try {
-            Account account = new Account(number, holder, initialBalance, limit);
-            account.withdraw(withdrawAmount);
-            System.out.println(account);
-        } catch (WithdrawError e) {
-            System.out.println("Withdraw error: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
         }
 
-        return 5;
+        ArrayList<Product> products = new ArrayList<>();
+
+        for (String inputLine : inputLines) {
+            String[] splitLine = inputLine.split(",");
+            String productName = splitLine[0];
+            double price = Double.parseDouble(splitLine[1]);
+            int quantity = Integer.parseInt(splitLine[2]);
+            Product product = new Product(productName, price, quantity);
+            products.add(product);
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        for (Product product : products) {
+            sb.append(product.toString()).append("\n");
+        }
+
+        String outputLines = sb.toString();
+
+        File inputFile = new File(inputPath);
+
+        File outDir = new File(inputFile.getParent() + File.separator + "out");
+        outDir.mkdir();
+
+        String outputPath = inputFile.getParent() + "\\out\\summary.csv";
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath))) {
+            bw.write(outputLines);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
