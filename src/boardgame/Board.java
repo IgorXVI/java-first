@@ -68,4 +68,13 @@ public class Board {
         validatePosition(pos);
         return thereIsAPiece(pos.getRow(), pos.getCol());
     }
+
+    public Piece removePiece(Position pos) {
+        if (!thereIsAPiece(pos)) {
+            throw new BoardException("Board position does not contain a piece");
+        }
+        Piece piece = getPiece(pos);
+        pieces[pos.getRow()][pos.getCol()] = null;
+        return piece;
+    }
 }
